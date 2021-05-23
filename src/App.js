@@ -1,40 +1,43 @@
-import React, { useState } from "react";
+import React from "react";
 import Product from "./Product";
 import Categories from "./Categories";
-import items from "./list";
-const allCategories = [
-  "Show all",
-  ...new Set(items.map((item) => item.category)),
-];
+import ShoppingCart from "./CartContainer";
+import { useGlobalContext } from "./context";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link,
+  useRouteMatch,
+  useParams,
+} from "react-router-dom";
+import Navbar from "./Navbar";
+import Error from "./Error";
 
 const App = () => {
-  const [item, setItem] = useState(items);
-  const [category, setCategory] = useState(allCategories);
-
-  const filterItem = (id) => {
-    const newItem = item.filter((it) => it.id === id);
-    setItem(newItem);
-  };
-  const filterCategory = (category) => {
-    if (category === "Show all") {
-      setItem(items);
-      return;
-    }
-    const newCategory = items.filter((item) => item.category === category);
-    setItem(newCategory);
-  };
-
+  const { cart } = useGlobalContext();
   return (
-    <main>
-      <section className="menu">
-        <div className="title">
-          <h2>Our product</h2>
-          <div className="underline"></div>
-          <Categories category={category} filterCategory={filterCategory} />
-          <Product items={item} filterItem={filterItem} />
-        </div>
-      </section>
-    </main>
+    <div>
+      <Switch>
+        <Route exact path="/">
+          <section className="menu">
+            <div className="title">
+              <h2>Our product</h2>
+              <div className="underline"></div>
+              <Categories />
+              {/* {cart.length === 0 ? <Product /> : <ShoppingCart />} */}
+              <Product />
+            </div>
+          </section>
+        </Route>
+        <Route path="/shopping_cart">
+          <ShoppingCart />
+        </Route>
+        <Route path="*">
+          <Error />
+        </Route>
+      </Switch>
+    </div>
   );
 };
 

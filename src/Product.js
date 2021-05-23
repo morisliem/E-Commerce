@@ -1,23 +1,25 @@
-import React, { useState, useEffect } from "react";
-import pictures from "./listImg";
+import React from "react";
 import ItemImg from "./ItemImages";
-const itemPict = [
-  ...new Set(
-    pictures.map((pict) => {
-      return pict.id, pict.image;
-    })
-  ),
-];
+import { useGlobalContext } from "./context";
+import ShoppingCart from "./CartContainer";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link,
+  useRouteMatch,
+  useParams,
+} from "react-router-dom";
 
-const Product = ({ items, filterItem }) => {
-  if (items.length === 1) {
-    const [{ id, brand, name, desc, price }] = items;
-    const x = pictures.filter((item) => item.id === id);
-    const picture = x[0].image;
+const Product = () => {
+  const { product, filterItem, addToCart } = useGlobalContext();
+
+  if (product.length === 1) {
+    const [{ brand, name, desc, price, img, id }] = product;
 
     return (
       <section style={{ marginLeft: "200px", marginRight: "200px" }}>
-        <ItemImg picture={picture} />
+        <ItemImg />
         <header
           style={{
             marginLeft: "100px",
@@ -34,22 +36,26 @@ const Product = ({ items, filterItem }) => {
         </header>
         <p style={{ marginRight: "100px", marginLeft: "100px" }}> {desc}</p>
         <h4 className="price">$ {price}</h4>
+        <Link
+          to="/shopping_cart"
+          className="filter-btn"
+          onClick={() => addToCart(price, name, img, id)}
+        >
+          Buy now
+        </Link>
         <button
           type="button"
           className="filter-btn"
-          onClick={() => alert(`The item is $ ${price}`)}
+          onClick={() => addToCart(price, name, img, id)}
         >
-          Buy now
-        </button>
-        <a href="" className="filter-btn">
           Add to cart
-        </a>
+        </button>
       </section>
     );
   }
   return (
     <section className="section-center">
-      {items.map((item) => {
+      {product.map((item) => {
         const { brand, name, id, desc, img, price } = item;
         return (
           <div key={id} className="product-item" onClick={() => filterItem(id)}>
